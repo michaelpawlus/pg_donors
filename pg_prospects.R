@@ -1,9 +1,13 @@
 setwd("C:/Users/pawlusm/Desktop/decTree")
 
-pg <- read.csv("pg_features.csv")
-
 library(ggplot2)
 library(caret)
+library(RCurl)
+
+x <- getURL("https://raw.githubusercontent.com/michaelpawlus/pg_donors/master/pg_features.csv")
+pg <- read.csv(text = x)
+
+## pg <- read.csv("pg_features.csv") ## for loading your own data file
 
 ## exploratory functions
 names(pg)
@@ -45,7 +49,7 @@ cbind(table(pg$rating,pg$gillett),prop.table(table(pg$rating,pg$gillett),1))
 ## by median income (no)
 range(pg$med_inc)
 pg$med_grp <- cut(pg$med_inc, breaks = seq(10000, 220000, by = 10000), label=FALSE)
-head(pg)
+# head(pg)
 cbind(table(pg$med_grp,pg$gillett),prop.table(table(pg$med_grp,pg$gillett),1))
 
 ## by age (yes)
@@ -54,7 +58,7 @@ table(pg$age)
 pg$age[pg$age>103] <- 0
 cbind(table(pg$age,pg$gillett),prop.table(table(pg$age,pg$gillett),1))
 pg$age_grp <- cut(pg$age, breaks = seq(10, 110, by = 10), label=FALSE)
-head(pg)
+# head(pg)
 cbind(table(pg$age_grp,pg$gillett),prop.table(table(pg$age_grp,pg$gillett),1))
 
 ## by pg_age (yes)
@@ -125,12 +129,12 @@ pg_sub <- pg_sub[pg_sub$married==1,]
 table(pg_sub$gillett)
 prop.table(table(pg_sub$gillett))
 
-## dummy variables  (not working at the moment)
+#### dummy variables  (not working at the moment)
 
-dummies <- dummyVars(gillett ~ const, data = pg_sub)
-head(predict(dummies, newdata = pg_sub, fullRank = TRUE))
-constcd <- as.data.frame(predict(dummies, newdata = pg_sub, fullRank = TRUE))
-pg_sub <- cbind(pg_sub, as.data.frame(predict(dummies, newdata = pg_sub)))
+# dummies <- dummyVars(gillett ~ const, data = pg_sub)
+# head(predict(dummies, newdata = pg_sub, fullRank = TRUE))
+# constcd <- as.data.frame(predict(dummies, newdata = pg_sub, fullRank = TRUE))
+# pg_sub <- cbind(pg_sub, as.data.frame(predict(dummies, newdata = pg_sub)))
 
 pg_sub$evnt <- as.numeric(as.character(pg_sub$evnt))
 

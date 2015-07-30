@@ -1,18 +1,18 @@
-setwd("C:/Users/pawlusm/Desktop/decTree")
-
-pg <- read.csv("pg_donors.csv")
+setwd("C:/Users/pawlusm/Desktop/decTree") # set to where ever your csv files live
 
 library(ggplot2)
 library(caret)
-library(lubridate)
+library(RCurl)
+
+x <- getURL("https://raw.githubusercontent.com/michaelpawlus/pg_donors/master/pg_donors.csv")
+pg <- read.csv(text = x)
+
+## pg <- read.csv("pg_donors.csv") ## this would be the format to read in your own file
 
 ## exploratory functions
 names(pg)
 str(pg)
 summary(pg)
-
-## convert date column to date type (doesn't work)
-pg$birth_date <- as.Date(pg$birth_date)
 
 ## check for duplicates
 table(duplicated(pg$pg_id))
@@ -52,7 +52,7 @@ cbind(table(pg$rating,pg$gillett),prop.table(table(pg$rating,pg$gillett),1))
 ## by median income (no)
 range(pg$med_inc)
 pg$med_grp <- cut(pg$med_inc, breaks = seq(10000, 220000, by = 10000), label=FALSE)
-head(pg)
+# head(pg)
 cbind(table(pg$med_grp,pg$gillett),prop.table(table(pg$med_grp,pg$gillett),1))
 
 ## by age (yes)
@@ -80,7 +80,7 @@ cbind(table(pg$married,pg$gillett),prop.table(table(pg$married,pg$gillett),1))
 ## by student groups (maybe)
 cbind(table(pg$stu_grp,pg$gillett),prop.table(table(pg$stu_grp,pg$gillett),1))
 
-## by lubbers years (yes)
+## by lubbers years (yes)  ## consecutive giving
 cbind(table(pg$lub_yrs,pg$gillett),prop.table(table(pg$lub_yrs,pg$gillett),1))
 pg$lub_grp <- 0
 pg$lub_grp[pg$lub_yrs>10] <- 1
@@ -123,7 +123,7 @@ qplot(pg_age, log_pgiv,data=pg,color=cae,size=gillett,shape=married,main="CAE/Ma
 #### create a subset ####
 
 pg_sub <- pg[pg$age>49,]
-summary(pg_sub)
+# summary(pg_sub)
 pg_sub <- pg_sub[pg_sub$married==1,]
 table(pg_sub$gillett)
 prop.table(table(pg_sub$gillett))
